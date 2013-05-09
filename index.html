@@ -1,0 +1,409 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Hobbit by patriciomacadden</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Hobbit</h1>
+        <p>A minimalistic microframework built on top of Rack.</p>
+
+        <p class="view"><a href="https://github.com/patriciomacadden/hobbit">View the Project on GitHub <small>patriciomacadden/hobbit</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/patriciomacadden/hobbit/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/patriciomacadden/hobbit/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/patriciomacadden/hobbit">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Hobbit <a href="https://travis-ci.org/patriciomacadden/hobbit"><img src="https://travis-ci.org/patriciomacadden/hobbit.png?branch=master" alt="Build Status"></a> <a href="https://codeclimate.com/github/patriciomacadden/hobbit"><img src="https://codeclimate.com/github/patriciomacadden/hobbit.png" alt="Code Climate"></a> <a href="https://coveralls.io/r/patriciomacadden/hobbit"><img src="https://coveralls.io/repos/patriciomacadden/hobbit/badge.png?branch=master" alt="Coverage Status"></a> <a href="https://gemnasium.com/patriciomacadden/hobbit"><img src="https://gemnasium.com/patriciomacadden/hobbit.png" alt="Dependency Status"></a> <a href="http://badge.fury.io/rb/hobbit"><img src="https://badge.fury.io/rb/hobbit.png" alt="Gem Version"></a>
+</h1>
+
+<p>A minimalistic microframework built on top of <a href="http://rack.github.io/">Rack</a>.</p>
+
+<h2>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<div class="highlight"><pre><span class="n">gem</span> <span class="s1">'hobbit'</span>
+<span class="c1"># or this if you want to use hobbit master</span>
+<span class="c1"># gem 'hobbit', github: 'patriciomacadden/hobbit'</span>
+</pre></div>
+
+<p>And then execute:</p>
+
+<div class="highlight"><pre><span class="nv">$ </span>bundle
+</pre></div>
+
+<p>Or install it yourself as:</p>
+
+<div class="highlight"><pre><span class="nv">$ </span>gem install hobbit
+</pre></div>
+
+<h2>Features</h2>
+
+<ul>
+<li>DSL inspired by <a href="http://www.sinatrarb.com/">Sinatra</a>.</li>
+<li>
+<a href="https://github.com/patriciomacadden/microbenchmarks">Speed</a>.</li>
+<li>Extensible with standard ruby classes and modules, with no extra logic. See
+<a href="https://github.com/patriciomacadden/hobbit-contrib">hobbit-contrib</a>.</li>
+<li>Zero configuration.</li>
+<li>Request and response classes could be injected (Defaults to <code>Rack::Request</code>
+and <code>Hobbit::Response</code>, respectively).</li>
+</ul><h2>Philosophy</h2>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">Don't repeat yourself</a></li>
+<li>Encourages the understanding and use of <a href="http://rack.github.io/">Rack</a> and
+its extensions instead of providing such functionality.</li>
+</ul><h2>Usage</h2>
+
+<p><code>Hobbit</code> applications are just instances of classes that inherits from
+<code>Hobbit::Base</code>, which complies the
+<a href="http://rack.rubyforge.org/doc/SPEC.html">Rack SPEC</a>.</p>
+
+<h3>Hello World example</h3>
+
+<p>Create a file called <code>app.rb</code>:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'hobbit'</span>
+
+<span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">get</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="s1">'Hello World!'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<p>Create a <code>config.ru</code> file:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'./app'</span>
+
+<span class="n">run</span> <span class="no">App</span><span class="o">.</span><span class="n">new</span>
+</pre></div>
+
+<p>Run it with <code>rackup</code>:</p>
+
+<div class="highlight"><pre><span class="nv">$ </span>rackup
+</pre></div>
+
+<p>View your app at <a href="http://localhost:9292">http://localhost:9292</a>.</p>
+
+<h3>Routes</h3>
+
+<p>Every route is composed of a verb, a path (optional) and a block. When an
+incoming request matches a route, the block is executed and a response is sent
+back to the client. The return value of the block will be the <code>body</code> of the
+response. The <code>headers</code> and <code>status code</code> of the response will be calculated by
+<code>Hobbit::Response</code>, but you could modify it anyway you want it.</p>
+
+<p>See an example:</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">get</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+
+  <span class="n">post</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+
+  <span class="n">put</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+
+  <span class="n">patch</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+
+  <span class="n">delete</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+
+  <span class="n">options</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<p>When a route gets called you have this methods available:</p>
+
+<ul>
+<li>
+<code>env</code>: The Rack environment.</li>
+<li>
+<code>request</code>: a <code>Rack::Request</code> instance.</li>
+<li>
+<code>response</code>: a <code>Hobbit::Response</code> instance.</li>
+</ul><h4>Available methods</h4>
+
+<ul>
+<li><code>delete</code></li>
+<li><code>get</code></li>
+<li><code>head</code></li>
+<li><code>options</code></li>
+<li><code>patch</code></li>
+<li><code>post</code></li>
+<li><code>put</code></li>
+</ul><p><strong>Note</strong>: Since most browsers don't support methods other than <strong>GET</strong> and
+<strong>POST</strong> you must use the <code>Rack::MethodOverride</code> middleware. (See
+<a href="https://github.com/rack/rack/blob/master/lib/rack/methodoverride.rb">Rack::MethodOverride</a>).</p>
+
+<h4>Routes with parameters</h4>
+
+<p>Besides the standard <code>GET</code> and <code>POST</code> parameters, you can have routes with
+parameters:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'hobbit'</span>
+
+<span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="c1"># matches both /hi/hobbit and /hi/patricio</span>
+  <span class="n">get</span> <span class="s1">'/hi/:name'</span> <span class="k">do</span>
+    <span class="c1"># request.params is filled with the route paramters, like this:</span>
+    <span class="s2">"Hello </span><span class="si">#{</span><span class="n">request</span><span class="o">.</span><span class="n">params</span><span class="o">[</span><span class="ss">:name</span><span class="o">]</span><span class="si">}</span><span class="s2">"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h4>Redirecting</h4>
+
+<p>If you look at Hobbit implementation, you may notice that there is no
+<code>redirect</code> method (or similar). This is because such functionality is provided
+by <a href="https://github.com/rack/rack/blob/master/lib/rack/response.rb">Rack::Response</a>
+and for now we <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">don't wan't to repeat ourselves</a>
+(obviously you can create an extension!). So, if you want to redirect to
+another route, do it like this:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'hobbit'</span>
+
+<span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">get</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">redirect</span> <span class="s1">'/hi'</span>
+  <span class="k">end</span>
+
+  <span class="n">get</span> <span class="s1">'/hi'</span> <span class="k">do</span>
+    <span class="s1">'Hello World!'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h3>Built on top of rack</h3>
+
+<p>Each hobbit application is a Rack stack (See this
+<a href="http://m.onkey.org/ruby-on-rack-2-the-builder">blog post</a> for more
+information).</p>
+
+<h4>Mapping applications</h4>
+
+<p>You can mount any Rack application to the stack by using the <code>map</code> class
+method:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'hobbit'</span>
+
+<span class="k">class</span> <span class="nc">InnerApp</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="c1"># gets called when path_info = '/inner'</span>
+  <span class="n">get</span> <span class="k">do</span>
+    <span class="s1">'Hello InnerApp!'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">map</span><span class="p">(</span><span class="s1">'/inner'</span><span class="p">)</span> <span class="p">{</span> <span class="n">run</span> <span class="no">InnerApp</span><span class="o">.</span><span class="n">new</span> <span class="p">}</span>
+
+  <span class="n">get</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="s1">'Hello App!'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h4>Using middleware</h4>
+
+<p>You can add any Rack middleware to the stack by using the <code>use</code> class method:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'hobbit'</span>
+
+<span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="kp">include</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Session</span>
+  <span class="n">use</span> <span class="ss">Rack</span><span class="p">:</span><span class="ss">:Session</span><span class="o">::</span><span class="no">Cookie</span><span class="p">,</span> <span class="ss">secret</span><span class="p">:</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">hex</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+  <span class="n">use</span> <span class="ss">Rack</span><span class="p">:</span><span class="ss">:ShowExceptions</span>
+
+  <span class="n">get</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="n">session</span><span class="o">[</span><span class="ss">:name</span><span class="o">]</span> <span class="o">=</span> <span class="s1">'hobbit'</span>
+  <span class="k">end</span>
+
+  <span class="c1"># more routes...</span>
+<span class="k">end</span>
+
+<span class="n">run</span> <span class="no">App</span><span class="o">.</span><span class="n">new</span>
+</pre></div>
+
+<h3>Request and response classes</h3>
+
+<p>You can inject the request (<code>Rack::Request</code>) and response (<code>Hobbit::Response</code>)
+classes for your application. Do it like this:</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">settings</span><span class="o">[</span><span class="ss">:request_class</span><span class="o">]</span> <span class="o">=</span> <span class="no">MyRequest</span>
+  <span class="n">settings</span><span class="o">[</span><span class="ss">:response_class</span><span class="o">]</span> <span class="o">=</span> <span class="no">MyResponse</span>
+
+  <span class="c1"># the rest of your app...</span>
+<span class="k">end</span>
+</pre></div>
+
+<h3>Security</h3>
+
+<p>By default, <code>hobbit</code> (nor Rack) comes without any protection against web
+attacks. The use of <a href="https://github.com/rkh/rack-protection">rack-protection</a>
+is highly recommended:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'hobbit'</span>
+<span class="nb">require</span> <span class="s1">'rack/protection'</span>
+<span class="nb">require</span> <span class="s1">'securerandom'</span>
+
+<span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">use</span> <span class="ss">Rack</span><span class="p">:</span><span class="ss">:Session</span><span class="o">::</span><span class="no">Cookie</span><span class="p">,</span> <span class="ss">secret</span><span class="p">:</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">hex</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+  <span class="n">use</span> <span class="ss">Rack</span><span class="p">:</span><span class="ss">:Protection</span>
+
+  <span class="n">get</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="s1">'Hello World!'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<p>Please see the <a href="https://github.com/rkh/rack-protection">rack-protection</a>
+documentation for futher information.</p>
+
+<h3>Testing</h3>
+
+<p><a href="https://github.com/brynary/rack-test">rack-test</a> is highly recommended. See
+an example:</p>
+
+<p>In <code>app.rb</code>:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'hobbit'</span>
+
+<span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">get</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="s1">'Hello World!'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<p>In <code>app_spec.rb</code>:</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'minitest/autorun'</span>
+<span class="c1"># imagine that app.rb and app_spec.rb are stored in the same directory</span>
+<span class="nb">require</span> <span class="s1">'app'</span>
+
+<span class="n">describe</span> <span class="no">App</span> <span class="k">do</span>
+  <span class="kp">include</span> <span class="ss">Rack</span><span class="p">:</span><span class="ss">:Test</span><span class="o">::</span><span class="no">Methods</span>
+
+  <span class="k">def</span> <span class="nf">app</span>
+    <span class="no">App</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="n">describe</span> <span class="s1">'GET /'</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s1">'must be ok'</span> <span class="k">do</span>
+      <span class="n">get</span> <span class="s1">'/'</span>
+      <span class="n">last_response</span><span class="o">.</span><span class="n">must_be</span> <span class="ss">:ok?</span>
+      <span class="n">last_response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">must_match</span> <span class="sr">/Hello World!/</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<p>Please see the <a href="https://github.com/brynary/rack-test">rack-test</a> documentation
+for futher information.</p>
+
+<h3>Extensions</h3>
+
+<p>You can extend hobbit by creating standard ruby modules. See an example:</p>
+
+<div class="highlight"><pre><span class="k">module</span> <span class="nn">MyExtension</span>
+  <span class="k">def</span> <span class="nf">do_something</span>
+    <span class="c1"># do something</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Hobbit</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="kp">include</span> <span class="no">MyExtension</span>
+
+  <span class="n">get</span> <span class="s1">'/'</span> <span class="k">do</span>
+    <span class="n">do_something</span>
+    <span class="s1">'Hello World!'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h4>Hobbit::Contrib</h4>
+
+<p><a href="https://github.com/patriciomacadden/hobbit-contrib">hobbit-contrib</a> is a ruby
+gem that comes with a lot of hobbit extensions, such as:</p>
+
+<ul>
+<li>
+<code>Hobbit::Render</code>: provides a (very) basic template rendering module.</li>
+<li>
+<code>Hobbit::EnhancedRender</code>: provides an enhanced template rendering module.</li>
+<li>
+<code>Hobbit::Session</code>: provides helper methods for handling user sessions.</li>
+<li>
+<code>Hobbit::Environment</code>: provides helper methods for handling application
+environments.</li>
+<li>
+<code>Hobbit::Filter</code>: provides helper class methods for handling Sinatra-like
+filters.</li>
+<li>
+<code>Hobbit::ErrorHandling</code>: provides helper class methods for handling
+Sinatra-like error handling.</li>
+</ul><p>... And many more!</p>
+
+<h2>Futher documentation</h2>
+
+<p>The <a href="https://github.com/patriciomacadden/hobbit/wiki">hobbit wiki</a> contains
+guides, how-tos and recipes for a better hobbit experience.</p>
+
+<h2>Contributing</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol><h2>License</h2>
+
+<p>See the <a href="https://github.com/patriciomacadden/hobbit/blob/master/LICENSE">LICENSE</a>.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/patriciomacadden">patriciomacadden</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-40776335-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
