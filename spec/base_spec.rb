@@ -21,12 +21,12 @@ describe Hobbit::Base do
   describe "::#{verb.downcase}" do
     it 'must add a route to @routes' do
       route = app.to_app.class.routes['#{verb}'].first
-      route[:path].must_equal ''
+      route.path.must_equal ''
     end
 
     it 'must extract the extra_params' do
       route = app.to_app.class.routes['#{verb}'].last
-      route[:extra_params].must_equal [:name]
+      route.extra_params.must_equal [:name]
     end
   end
 EOS
@@ -40,6 +40,7 @@ EOS
       settings.must_be_kind_of Hash
       settings.must_include :request_class
       settings.must_include :response_class
+      settings.must_include :route_class
     end
 
     it 'must be initialized with request_class as Rack::Request' do
@@ -48,6 +49,10 @@ EOS
 
     it 'must be initialized with request_class as Hobbit::Response' do
       settings[:response_class].must_equal Hobbit::Response
+    end
+
+    it 'must be initialized with request_class as Hobbit::Route' do
+      settings[:route_class].must_equal Hobbit::Route
     end
   end
 

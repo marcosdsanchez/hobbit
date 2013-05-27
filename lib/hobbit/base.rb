@@ -2,7 +2,9 @@ module Hobbit
   class Base
     class << self
       %w(DELETE GET HEAD OPTIONS PATCH POST PUT).each do |verb|
-        define_method(verb.downcase) { |path = '', &block| routes[verb] << compile_route!(path, &block) }
+        define_method(verb.downcase) do |path = '', &block|
+          routes[verb] <<  settings[:route_class].new(path, &block)
+        end
       end
 
       def map(path, &block)
@@ -20,7 +22,11 @@ module Hobbit
       end
 
       def settings
-        @settings ||= { request_class: Rack::Request, response_class: Hobbit::Response }
+        @settings ||= {
+            request_class: Rack::Request,
+            response_class: Hobbit::Response,
+            route_class: Hobbit::Route
+        }
       end
 
       def stack
@@ -29,20 +35,6 @@ module Hobbit
 
       def use(middleware, *args, &block)
         stack.use(middleware, *args, &block)
-      end
-
-      private
-
-      def compile_route!(path, &block)
-        route = { block: block, compiled_path: nil, extra_params: [], path: path }
-
-        compiled_path = path.gsub(/:\w+/) do |match|
-          route[:extra_params] << match.gsub(':', '').to_sym
-          '([^/?#]+)'
-        end
-        route[:compiled_path] = /^#{compiled_path}$/
-
-        route
       end
     end
 
@@ -63,13 +55,13 @@ module Hobbit
     private
 
     def route_eval
-      route = self.class.routes[request.request_method].detect { |r| r[:compiled_path] =~ request.path_info }
+      route = self.class.routes[request.request_method].detect { |r| r.compiled_path =~ request.path_info }
       if route
         $~.captures.each_with_index do |value, index|
-          param = route[:extra_params][index]
+          param = route.extra_params[index]
           request.params[param] = value
         end
-        response.write instance_eval(&route[:block])
+        response.write instance_eval(&route.block)
       else
         response.status = 404
       end
