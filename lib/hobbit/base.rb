@@ -3,7 +3,7 @@ module Hobbit
     class << self
       %w(DELETE GET HEAD OPTIONS PATCH POST PUT).each do |verb|
         define_method(verb.downcase) do |path = '', &block|
-          routes[verb] <<  settings[:route_class].new(path, &block)
+          routes[verb] << settings[:route_class].new(path, &block)
         end
       end
 
@@ -11,7 +11,7 @@ module Hobbit
         stack.map(path, &block)
       end
 
-      alias :new! :new
+      alias_method :new!, :new
       def new(*args, &block)
         stack.run new!(*args, &block)
         stack
@@ -40,30 +40,43 @@ module Hobbit
 
     attr_reader :env, :request, :response
 
+    def settings
+      self.class.settings
+    end
+
     def call(env)
       dup._call(env)
     end
 
     def _call(env)
       @env = env
-      @request = self.class.settings[:request_class].new(@env)
-      @response = self.class.settings[:response_class].new
-      route_eval
-      @response.finish
+      @request = settings[:request_class].new(@env)
+      @response = settings[:response_class].new
+      @route = match_route
+      route_handler
     end
 
     private
 
-    def route_eval
-      route = self.class.routes[request.request_method].detect { |r| r.compiled_path =~ request.path_info }
-      if route
-        $~.captures.each_with_index do |value, index|
-          param = route.extra_params[index]
-          request.params[param] = value
-        end
-        response.write instance_eval(&route.block)
+    def match_route
+      self.class.routes[@request.request_method].find do |route|
+        route.match @request.path_info
+      end
+    end
+
+    def route_handler
+      if @route
+        match_request_parameters
+        @response.write instance_eval(&@route.block)
       else
-        response.status = 404
+        @response.status = 404
+      end
+      @response.finish
+    end
+
+    def match_request_parameters
+      @route.matched_parameters do |request_value, route_param|
+        @request.params[route_param] = request_value
       end
     end
   end
