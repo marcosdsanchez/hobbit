@@ -7,6 +7,7 @@ require 'coveralls'
 Coveralls.wear!
 
 require 'minitest/autorun'
+require 'minitest-spec-context'
 require 'rack'
 require 'rack/test'
 
