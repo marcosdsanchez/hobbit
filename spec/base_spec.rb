@@ -26,7 +26,7 @@ describe Hobbit::Base do
 
     it 'must extract the extra_params' do
       route = app.to_app.class.routes['#{verb}'].last
-      route.extra_params.must_equal [:name]
+      route.param_placeholders.must_equal [:name]
     end
   end
 EOS
@@ -36,7 +36,8 @@ EOS
   describe '::settings' do
     let(:settings) { app.to_app.class.settings }
 
-    it 'must return a hash with (at least) a request_class and response_class keys' do
+    it 'must return a hash with (at least) a request_class and
+        response_class keys' do
       settings.must_be_kind_of Hash
       settings.must_include :request_class
       settings.must_include :response_class
