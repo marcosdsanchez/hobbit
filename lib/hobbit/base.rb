@@ -76,7 +76,7 @@ module Hobbit
     end
 
     def match_request_parameters
-      @route.matched_parameters do |request_value, route_param|
+      @route.matched_parameters do |route_param, request_value|
         @request.params[route_param] = request_value
       end
     end

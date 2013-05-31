@@ -8,8 +8,8 @@ module Hobbit
       compile!
     end
 
-    def param_placeholders
-      @param_placeholders ||= []
+    def names
+      @names ||= []
     end
 
     def match(request_path_info)
@@ -18,9 +18,12 @@ module Hobbit
 
     def matched_parameters
       if @last_match
+        matched_params = {}
         @last_match.captures.each_with_index do |value, index|
-          yield(value, @param_placeholders[index])
+          yield(@names[index], value)
+          matched_params[@names[index]] = value
         end
+        matched_params
       end
     end
 
@@ -28,7 +31,7 @@ module Hobbit
 
     def compile!
       compiled_path = @path.gsub(/:\w+/) do |match|
-        param_placeholders << match.gsub(':', '').to_sym
+        names << match.gsub(':', '').to_sym
         '([^/?#]+)'
       end
       @compiled_path = /^#{compiled_path}$/

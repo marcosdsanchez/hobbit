@@ -26,7 +26,7 @@ describe Hobbit::Base do
 
     it 'must extract the extra_params' do
       route = app.to_app.class.routes['#{verb}'].last
-      route.param_placeholders.must_equal [:name]
+      route.names.must_equal [:name]
     end
   end
 EOS
