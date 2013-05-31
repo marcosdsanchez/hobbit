@@ -1,4 +1,5 @@
 module Hobbit
+  # Base class for all Hobbit applications and middleware.
   class Base
     class << self
       %w(DELETE GET HEAD OPTIONS PATCH POST PUT).each do |verb|

@@ -1,4 +1,4 @@
-# Hobbit [![Build Status](https://travis-ci.org/patriciomacadden/hobbit.png?branch=master)](https://travis-ci.org/patriciomacadden/hobbit) [![Code Climate](https://codeclimate.com/github/patriciomacadden/hobbit.png)](https://codeclimate.com/github/patriciomacadden/hobbit) [![Coverage Status](https://coveralls.io/repos/patriciomacadden/hobbit/badge.png?branch=master)](https://coveralls.io/r/patriciomacadden/hobbit) [![Dependency Status](https://gemnasium.com/patriciomacadden/hobbit.png)](https://gemnasium.com/patriciomacadden/hobbit) [![Gem Version](https://badge.fury.io/rb/hobbit.png)](http://badge.fury.io/rb/hobbit)
+# Hobbit [![Build Status](https://travis-ci.org/marcosdsanchez/hobbit.png?branch=master)](https://travis-ci.org/marcosdsanchez/hobbit) [![Code Climate](https://codeclimate.com/github/marcosdsanchez/hobbit.png)](https://codeclimate.com/github/marcosdsanchez/hobbit) [![Coverage Status](https://coveralls.io/repos/marcosdsanchez/hobbit/badge.png?branch=master)](https://coveralls.io/r/marcosdsanchez/hobbit) [![Dependency Status](https://gemnasium.com/marcosdsanchez/hobbit.png)](https://gemnasium.com/marcosdsanchez/hobbit) [![Gem Version](https://badge.fury.io/rb/hobbit.png)](http://badge.fury.io/rb/hobbit)
 
 A minimalistic microframework built on top of [Rack](http://rack.github.io/).
 
@@ -9,7 +9,7 @@ Add this line to your application's Gemfile:
 ```ruby
 gem 'hobbit'
 # or this if you want to use hobbit master
-# gem 'hobbit', github: 'patriciomacadden/hobbit'
+# gem 'hobbit', github: 'marcosdsanchez/hobbit'
 ```
 
 And then execute:

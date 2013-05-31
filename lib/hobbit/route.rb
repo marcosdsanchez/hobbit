@@ -1,4 +1,5 @@
 module Hobbit
+  # The route object. Manages parameter matching and compilation
   class Route
     attr_reader :block, :path
 
