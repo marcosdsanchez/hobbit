@@ -7,8 +7,8 @@ module Hobbit
   # http://rack.rubyforge.org/doc/classes/Rack/Response/Helpers.html
   class Response < Rack::Response
     def initialize(*)
-      header['Content-Type'] = 'text/html; charset=utf-8'
       super
+      headers['Content-Type'] ||= 'text/html; charset=utf-8'
     end
   end
 end
